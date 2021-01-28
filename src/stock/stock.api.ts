@@ -54,7 +54,9 @@ export class StockAPI {
       }: {
         data: { StatisticSearch: { row: ResponseDto[] } };
       } = await axios.get(
-        'http://ecos.bok.or.kr/api/StatisticSearch/7QMQRH93AK98G0IWSN0F/json/kr/1/50000/064Y001/DD/20040101/20201231/0089000',
+        `http://ecos.bok.or.kr/api/StatisticSearch/${this.config.get(
+          'STOCK_API_KEY',
+        )}/json/kr/1/50000/064Y001/DD/20040101/20201231/0089000`,
       );
 
       result = row.map((data) => ({
