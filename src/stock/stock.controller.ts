@@ -1,41 +1,39 @@
-import { Controller, Get } from '@nestjs/common';
-import { ResponseDto } from './stock.dto';
-import axios from 'axios';
+import { Controller, Get, HttpException } from '@nestjs/common';
+import { StockAPI } from './stock.api';
 
 @Controller('stock')
 export class StockController {
+  constructor(private stockAPI: StockAPI) {}
   @Get('kospi')
   async getKospi() {
-    const {
-      data: {
-        StatisticSearch: { row },
-      },
-    }: { data: { StatisticSearch: { row: ResponseDto[] } } } = await axios.get(
-      'http://ecos.bok.or.kr/api/StatisticSearch/7QMQRH93AK98G0IWSN0F/json/kr/1/50000/064Y001/DD/20040101/20201231/0001000',
-    );
-
-    const result = row.map((data) => ({
-      value: data.DATA_VALUE,
-      time: data.TIME,
-    }));
+    const { result, error } = await this.stockAPI.fetchKospi();
+    console.log(result, error);
+    if (error) {
+      throw new HttpException(
+        {
+          status: error.getStatusCode(),
+          error: error.getMessage(),
+        },
+        error.getStatusCode(),
+      );
+    }
 
     return result;
   }
 
   @Get('kosdaq')
   async getKosdaq() {
-    const {
-      data: {
-        StatisticSearch: { row },
-      },
-    }: { data: { StatisticSearch: { row: ResponseDto[] } } } = await axios.get(
-      'http://ecos.bok.or.kr/api/StatisticSearch/7QMQRH93AK98G0IWSN0F/json/kr/1/50000/064Y001/DD/20040101/20201231/0089000',
-    );
+    const { result, error } = await this.stockAPI.fetchKosdaq();
 
-    const result = row.map((data) => ({
-      value: data.DATA_VALUE,
-      time: data.TIME,
-    }));
+    if (error) {
+      throw new HttpException(
+        {
+          status: error.getStatusCode(),
+          error: error.getMessage(),
+        },
+        error.getStatusCode(),
+      );
+    }
 
     return result;
   }
