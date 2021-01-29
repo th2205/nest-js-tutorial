@@ -7,7 +7,7 @@ export class StockController {
   @Get('kospi')
   async getKospi() {
     const { result, error } = await this.stockAPI.fetchKospi();
-    console.log(result, error);
+
     if (error) {
       throw new HttpException(
         {
